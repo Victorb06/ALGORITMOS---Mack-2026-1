@@ -17,7 +17,7 @@ const char* Codigo_Morse[26] = {
 ".-","-...","-.-.","-..",".","..-.","--.","....","..",".---",
 "-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-",
 "..-","...-",".--","-..-","-.--","--.."
-}
+};
 
 const char alfabeto[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -44,15 +44,50 @@ void traduzir_corromp(char codigo[]){
     printf("]");
 }
 
+void processar_lin(char linha[],int pos, char codigo_letra[],int indice_letra, int contador_espacos){
+    char c = linha[pos];
+    if(c =="\0" || c == "\n"){
+        if(indice_letra > 0){
+            codigo_letra[indice_letra] = "\0";
+            if(codigo_letra[strlen(codigo_letra)-1] == "*"){
+                traduzir_corromp(codigo_letra);
+            } else{
+                trazduzir_cod(codigo_letra);
+            }
+        }
+        return;
+    }
+    if(c == " "){
+        contador_espacos++;
+        if(indice_letra > 0){
+            codigo_letra[indice_letra] = "\0";
+            if(codigo_letra[strlen(codigo_letra)-1] == "*"){
+                traduzir_corromp(codigo_letra);
+            } else{
+                trazduzir_cod(codigo_letra);
+            }
+            indice_letra = 0;
+        }
+        if(contador_espacos == 2){
+            printf(" ");
+        }
+    }
+    else{
+        if(contador_espacos > 0){
+            contador_espacos = 0;
+        }
+        codigo_letra[indice_letra] = c;
+        indice_letra++;
+    }
+    processar_lin(linha, pos + 1,codigo_letra,indice_letra,contador_espacos);
+}
+
 int main(){
     char linha[100];
-    char codigo_letra[20];
-    int indice_letra = 0;
-    int contador_espaco = 0;
+    char codigo_letra[20] = "";
     printf("Digite o Código Morse:");
     fgets(linha, sizeof(linha), stdin);
-
-    for(int i = 0; i <= strlen(linha); i++){
-        
-    }
+    processar_lin(linha,0,codigo_letra,0,0);
+    printf("\n");
+    return 0;
 }
