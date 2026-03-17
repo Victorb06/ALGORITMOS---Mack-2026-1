@@ -21,7 +21,7 @@ const char* Codigo_Morse[26] = {
 
 const char alfabeto[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-void trazduzir_cod(char codigo[]){
+void traduzir_cod(char codigo[]){
     for(int i = 0; i < 26; i++){
         if(strcmp(codigo, Codigo_Morse[i]) == 0){
             printf("%c",alfabeto[i]);
@@ -34,7 +34,7 @@ void traduzir_corromp(char codigo[]){
     char prefixo [20];
     int tamanho = strlen(codigo) - 1;
     strncpy(prefixo, codigo, tamanho);
-    prefixo [tamanho] = "\0";
+    prefixo [tamanho] = '\0';
     printf("[");
     for (int i = 0; i < 26; i++){
         if(strncmp(prefixo,Codigo_Morse[i],strlen(prefixo)) == 0){
@@ -46,25 +46,25 @@ void traduzir_corromp(char codigo[]){
 
 void processar_lin(char linha[],int pos, char codigo_letra[],int indice_letra, int contador_espacos){
     char c = linha[pos];
-    if(c =="\0" || c == "\n"){
+    if(c == '\0' || c == '\n'){
         if(indice_letra > 0){
-            codigo_letra[indice_letra] = "\0";
-            if(codigo_letra[strlen(codigo_letra)-1] == "*"){
+            codigo_letra[indice_letra] = '\0';
+            if(codigo_letra[strlen(codigo_letra)-1] == '*'){
                 traduzir_corromp(codigo_letra);
             } else{
-                trazduzir_cod(codigo_letra);
+                traduzir_cod(codigo_letra);
             }
         }
         return;
     }
-    if(c == " "){
+    if(c == ' '){
         contador_espacos++;
         if(indice_letra > 0){
-            codigo_letra[indice_letra] = "\0";
-            if(codigo_letra[strlen(codigo_letra)-1] == "*"){
+            codigo_letra[indice_letra] = '\0';
+            if(codigo_letra[strlen(codigo_letra)-1] == '*'){
                 traduzir_corromp(codigo_letra);
             } else{
-                trazduzir_cod(codigo_letra);
+                traduzir_cod(codigo_letra);
             }
             indice_letra = 0;
         }
@@ -85,7 +85,7 @@ void processar_lin(char linha[],int pos, char codigo_letra[],int indice_letra, i
 int main(){
     char linha[100];
     char codigo_letra[20] = "";
-    printf("Digite o Código Morse:");
+    printf("Digite o Código Morse (1 espaço = letra; 2 espaços = palavra):");
     fgets(linha, sizeof(linha), stdin);
     processar_lin(linha,0,codigo_letra,0,0);
     printf("\n");
