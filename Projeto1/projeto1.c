@@ -68,7 +68,7 @@ void processar_lin(char linha[],int pos, char codigo_letra[],int indice_letra, i
             }
             indice_letra = 0;
         }
-        if(contador_espacos == 2){
+        if(contador_espacos >= 2){
             printf(" ");
         }
     }
