@@ -4,10 +4,10 @@ Projeto 1- Laboratório de Algoritmos e Programação II
 Integrantes:
 Enzo Yuri Domingues Ma
 RA:10738664
-Willian Lima de Oliveira Pena
-RA:10428678
 Victor Esteves Gallo Birello
 RA: 10737139
+Willian Lima de Oliveira Pena
+RA:10428678
  */
 
 #include <stdio.h>
@@ -32,14 +32,13 @@ void traduzir(const char *codigo) {
 
 void traduzir_corrompido(const char *codigo) {
     char prefixo[20];
-    int tam = strlen(codigo) - 1; // remove *
+    int tam = strlen(codigo) - 1;
 
     strncpy(prefixo, codigo, tam);
     prefixo[tam] = '\0';
 
     printf("[");
 
-    // percorre em ordem alfabética → já sai ordenado
     for (int i = 0; i < 26; i++) {
         if (strncmp(prefixo, CODIGO_MORSE[i], strlen(prefixo)) == 0) {
             printf("%c", ALFABETO[i]);
