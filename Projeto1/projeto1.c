@@ -13,81 +13,96 @@ RA: 10737139
 #include <stdio.h>
 #include <string.h>
 
-const char* Codigo_Morse[26] = {
-".-","-...","-.-.","-..",".","..-.","--.","....","..",".---",
-"-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-",
-"..-","...-",".--","-..-","-.--","--.."
+const char* CODIGO_MORSE[26] = {
+    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---",
+    "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-",
+    "..-", "...-", ".--", "-..-", "-.--", "--.."
 };
 
-const char alfabeto[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const char ALFABETO[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-void traduzir_cod(char codigo[]){
-    for(int i = 0; i < 26; i++){
-        if(strcmp(codigo, Codigo_Morse[i]) == 0){
-            printf("%c",alfabeto[i]);
+void traduzir(const char *codigo) {
+    for (int i = 0; i < 26; i++) {
+        if (strcmp(codigo, CODIGO_MORSE[i]) == 0) {
+            printf("%c", ALFABETO[i]);
             return;
         }
     }
 }
 
-void traduzir_corromp(char codigo[]){
-    char prefixo [20];
-    int tamanho = strlen(codigo) - 1;
-    strncpy(prefixo, codigo, tamanho);
-    prefixo [tamanho] = '\0';
+void traduzir_corrompido(const char *codigo) {
+    char prefixo[20];
+    int tam = strlen(codigo) - 1; // remove *
+
+    strncpy(prefixo, codigo, tam);
+    prefixo[tam] = '\0';
+
     printf("[");
-    for (int i = 0; i < 26; i++){
-        if(strncmp(prefixo,Codigo_Morse[i],strlen(prefixo)) == 0){
-            printf("%c",alfabeto[i]);
+
+    // percorre em ordem alfabética → já sai ordenado
+    for (int i = 0; i < 26; i++) {
+        if (strncmp(prefixo, CODIGO_MORSE[i], strlen(prefixo)) == 0) {
+            printf("%c", ALFABETO[i]);
         }
     }
+
     printf("]");
 }
 
-void processar_lin(char linha[],int pos, char codigo_letra[],int indice_letra, int contador_espacos){
+void processar(char linha[], int pos, char codigo[], int *ind, int *espacos) {
     char c = linha[pos];
-    if(c == '\0' || c == '\n'){
-        if(indice_letra > 0){
-            codigo_letra[indice_letra] = '\0';
-            if(codigo_letra[strlen(codigo_letra)-1] == '*'){
-                traduzir_corromp(codigo_letra);
-            } else{
-                traduzir_cod(codigo_letra);
-            }
+
+    if (c == '\0' || c == '\n') {
+        if (*ind > 0) {
+            codigo[*ind] = '\0';
+
+            if (codigo[strlen(codigo) - 1] == '*')
+                traduzir_corrompido(codigo);
+            else
+                traduzir(codigo);
         }
         return;
     }
-    if(c == ' '){
-        contador_espacos++;
-        if(indice_letra > 0){
-            codigo_letra[indice_letra] = '\0';
-            if(codigo_letra[strlen(codigo_letra)-1] == '*'){
-                traduzir_corromp(codigo_letra);
-            } else{
-                traduzir_cod(codigo_letra);
-            }
-            indice_letra = 0;
+
+    if (c == ' ') {
+        (*espacos)++;
+
+        if (*ind > 0) {
+            codigo[*ind] = '\0';
+
+            if (codigo[strlen(codigo) - 1] == '*')
+                traduzir_corrompido(codigo);
+            else
+                traduzir(codigo);
+
+            *ind = 0;
         }
-        if(contador_espacos >= 2){
+
+        if (*espacos == 2) {
             printf(" ");
         }
     }
-    else{
-        if(contador_espacos > 0){
-            contador_espacos = 0;
-        }
-        codigo_letra[indice_letra] = c;
-        indice_letra++;
+    else {
+        *espacos = 0;
+
+        codigo[*ind] = c;
+        (*ind)++;
     }
-    processar_lin(linha, pos + 1,codigo_letra,indice_letra,contador_espacos);
+
+    processar(linha, pos + 1, codigo, ind, espacos);
 }
 
-int main(){
-    char linha[100];
-    char codigo_letra[20] = "";
-    printf("Digite o Código Morse (1 espaço = letra; 2 espaços = palavra):");
+int main() {
+    char linha[200];
+    char codigo[20] = "";
+    int ind = 0;
+    int espacos = 0;
+
+    printf("Digite o código Morse:\n");
     fgets(linha, sizeof(linha), stdin);
-    processar_lin(linha,0,codigo_letra,0,0);
+
+    processar(linha, 0, codigo, &ind, &espacos);
+
     printf("\n");
     return 0;
 }
