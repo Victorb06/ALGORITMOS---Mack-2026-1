@@ -65,9 +65,7 @@ int existeSomaONLogN(double v[], int n, double x) {
     for (int i = 0; i < n; i++) {
         double procurado = x - v[i];
 
-        int pos = buscaBinaria(v, i + 1, n - 1, procurado);
-
-        if (pos != -1) {
+        if (buscaBinaria(v, i + 1, n - 1, procurado) != -1) {
             return 1;
         }
     }
@@ -75,8 +73,6 @@ int existeSomaONLogN(double v[], int n, double x) {
     return 0;
 }
 
-
-//B
 int existeSomaLinear(double v[], int n, double x) {
     int esquerda = 0;
     int direita = n - 1;
@@ -93,6 +89,30 @@ int existeSomaLinear(double v[], int n, double x) {
         } else {
             direita--;
         }
+    }
+
+    return 0;
+}
+
+int main() {
+    double S1[] = {7, 2, 9, 4, 1, 8};
+    int n1 = 6;
+    double x1 = 10;
+
+    if (existeSomaONLogN(S1, n1, x1)) {
+        printf("Algoritmo O(n log n): existe um par cuja soma e %.0lf\n", x1);
+    } else {
+        printf("Algoritmo O(n log n): nao existe par cuja soma e %.0lf\n", x1);
+    }
+
+    double S2[] = {1, 2, 4, 7, 8, 9};
+    int n2 = 6;
+    double x2 = 10;
+
+    if (existeSomaLinear(S2, n2, x2)) {
+        printf("Algoritmo O(n): existe um par cuja soma e %.0lf\n", x2);
+    } else {
+        printf("Algoritmo O(n): nao existe par cuja soma e %.0lf\n", x2);
     }
 
     return 0;
