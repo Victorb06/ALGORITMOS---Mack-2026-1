@@ -16,73 +16,93 @@ RA:10428678
 
 #define MAX 1000
 
+//Trocar os dados de duas posições de arrays paralelos 
 void trocarDados(int ids[], int pIds[], int quants[], float precos[], int i, int j) {
-    int tId = ids[i]; ids[i] = ids[j]; ids[j] = tId;
-    int tPId = pIds[i]; pIds[i] = pIds[j]; pIds[j] = tPId;
-    int tQ = quants[i]; quants[i] = quants[j]; quants[j] = tQ;
-    float tPr = precos[i]; precos[i] = precos[j]; precos[j] = tPr;
+    int tId = ids[i]; ids[i] = ids[j]; ids[j] = tId; //Variavel temporaria para armazenar o ID e trocar entre as posições
+    int tPId = pIds[i]; pIds[i] = pIds[j]; pIds[j] = tPId; //Variavel temporaria para para o produto ID e troca-los
+    int tQ = quants[i]; quants[i] = quants[j]; quants[j] = tQ; //Variavel temporaria para quantidade e troca-las
+    float tPr = precos[i]; precos[i] = precos[j]; precos[j] = tPr; //Variavel temporaria para o preco e troca-los
 }
 
+//Lê o arquivo txt 
 int carregarVendas(const char nome[], int ids[], int pIds[], int quants[], float precos[], int max) {
-    FILE *f = fopen(nome, "r");
-    if (!f) return -1;
+    FILE *f = fopen(nome, "r"); //Abre o arquivo
+    if (!f) return -1; //verifica se houve algum erro na hora de abrir 
     int i = 0;
-    while (i < max && fscanf(f, "%d %d %d %f", &ids[i], &pIds[i], &quants[i], &precos[i]) == 4) i++;
+    while (i < max && fscanf(f, "%d %d %d %f", &ids[i], &pIds[i], &quants[i], &precos[i]) == 4) i++; // Vai ler o arquvio até os valores estarem correctos 
     fclose(f);
-    return i;
+    return i; //Retorna o número de registradores que foram carregados
 }
 
+//Carrega os produtos do arquivo csv
 int carregarProdutos(const char nome[], int pIdsC[], char descs[][50], int max) {
-    FILE *f = fopen(nome, "r");
-    if (!f) return -1;
+    FILE *f = fopen(nome, "r"); //Abre o arquivo
+    if (!f) return -1; //verifica se houve algum erro na hora de abrir
     int i = 0;
-    while (i < max && fscanf(f, "%d;%49[^\n]", &pIdsC[i], descs[i]) == 2) i++;
+    while (i < max && fscanf(f, "%d;%49[^\n]", &pIdsC[i], descs[i]) == 2) i++; //Lê ate 49 caracteres ou até enter
     fclose(f);
-    return i;
+    return i; // Retorna a quantidade carregada 
 }
 
+//Percorre todo o array até procurar om ID desejado 
 int buscaLinear(int ids[], int n, int id) {
-    for (int i = 0; i < n; i++) if (ids[i] == id) return i;
-    return -1;
+    for (int i = 0; i < n; i++) //Percorre todo o vetor
+    if (ids[i] == id) return i; //Verifica se encontrou e retorna
+    return -1; //Retorna -1 caso não tenha encontrado
 }
 
+//Procuar o ID desejado de forma mais rápida porem funciona apenas com o vetor já ordenado 
 int buscaBinaria(int ids[], int n, int id) {
     int ini = 0, fim = n - 1;
     while (ini <= fim) {
-        int meio = (ini + fim) / 2;
-        if (ids[meio] == id) return meio;
-        if (ids[meio] > id) fim = meio - 1;
-        else ini = meio + 1;
+        int meio = (ini + fim) / 2; //Calcula a posição do meio
+        if (ids[meio] == id) return meio; //Verifica se encontrou 
+        if (ids[meio] > id) fim = meio - 1; //Se valor do meio for maior está na parte da esquerda
+        else ini = meio + 1; // Se o valor for menor está na parte da direita 
     }
-    return -1;
+    return -1; // Não encontrou
 }
 
+//Compara os elementos vizinhos e os maiores valores vão sendo jogados para o final
 void bubbleSortVendaPorId(int ids[], int pIds[], int quants[], float precos[], int n) {
-    for (int i = 0; i < n - 1; i++)
-        for (int j = 0; j < n - 1 - i; j++)
-            if (ids[j] > ids[j + 1]) trocarDados(ids, pIds, quants, precos, j, j + 1);
+    for (int i = 0; i < n - 1; i++){
+        for (int j = 0; j < n - 1 - i; j++){
+            if (ids[j] > ids[j + 1]){
+                trocarDados(ids, pIds, quants, precos, j, j + 1); // Se estiver fora de ordem troca
+            }
+        }
+    }
 }
 
+//Procuar o menor elemento e o coloca na posição correcta
 void selectionSortPorId(int ids[], int pIds[], int quants[], float precos[], int n) {
     for (int i = 0; i < n - 1; i++) {
-        int min = i;
-        for (int j = i + 1; j < n; j++) if (ids[j] < ids[min]) min = j;
-        if (min != i) trocarDados(ids, pIds, quants, precos, i, min);
+        int min = i; //Assume o menor como atual 
+        for (int j = i + 1; j < n; j++){ //Procura um menor no restante do vetor
+            if (ids[j] < ids[min]){ 
+                min = j;
+            }
+        }
+        if (min != i){ //Se encontrou um menor troca
+           trocarDados(ids, pIds, quants, precos, i, min);
+        }
     }
 }
 
+//Insere o elemento na posição certa dentro da parte já ordenada do vetor
 void insertionSortVendaPorId(int ids[], int pIds[], int quants[], float precos[], int n) {
-    for (int i = 1; i < n; i++) {
-        int idKey = ids[i], pidKey = pIds[i], qKey = quants[i]; float prKey = precos[i];
-        int j = i - 1;
+    for (int i = 1; i < n; i++) { //começa a partir do segundo elemento
+        int idKey = ids[i], pidKey = pIds[i], qKey = quants[i]; float prKey = precos[i]; //guarda os valores atuais
+        int j = i - 1; //Compara com os anteriores
         while (j >= 0 && ids[j] > idKey) {
-            ids[j+1] = ids[j]; pIds[j+1] = pIds[j]; quants[j+1] = quants[j]; precos[j+1] = precos[j];
+            ids[j+1] = ids[j]; pIds[j+1] = pIds[j]; quants[j+1] = quants[j]; precos[j+1] = precos[j]; //Move os elementos para frente
             j--;
         }
-        ids[j+1] = idKey; pIds[j+1] = pidKey; quants[j+1] = qKey; precos[j+1] = prKey;
+        ids[j+1] = idKey; pIds[j+1] = pidKey; quants[j+1] = qKey; precos[j+1] = prKey; //Insere eles na posição certa
     }
 }
 
+//
 void quickSortPorId(int ids[], int pIds[], int quants[], float precos[], int inicio, int fim) {
     if (inicio < fim) {
         int pivo = ids[fim], i = inicio - 1;
@@ -195,10 +215,8 @@ int encontrarProdutoMaisVendido(int pIds[], int quants[], int n) {
 }
 
 int main() {
-    // Arrays para Vendas [3]
     int ids[MAX], produtoIds[MAX], quantidades[MAX];
     float precos[MAX];
-    // Arrays para Produtos [5]
     int pIdsCatalogo[MAX];
     char descricoes[MAX][50];
 
