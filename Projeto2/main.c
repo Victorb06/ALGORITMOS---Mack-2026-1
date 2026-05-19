@@ -210,25 +210,33 @@ void mergeSortPorId(int ids[], int pIds[], int quants[], float precos[], int ini
     }
 }
 
-//
+//Calcula o faturamento total das vendas
 float calcularFaturamentoTotal(int quants[], float prs[], int n) {
-    float total = 0;
-    for (int i = 0; i < n; i++) total += quants[i] * prs[i];
-    return total;
+    float total = 0; //variavel acumuladora
+    for (int i = 0; i < n; i++) { //percorre todas as vendas
+        total += quants[i] * prs[i];
+    }
+    return total; //retorna o faturamento total
 }
 
+//Encontra o produto com a maior qunatidade total de vendas
 int encontrarProdutoMaisVendido(int pIds[], int quants[], int n) {
-    int maxQ = -1, idMaisVendido = -1;
+    int maxQ = -1, idMaisVendido = -1; //Guarda a maior quantidade encontrada e o ID correspondente
     for (int i = 0; i < n; i++) {
         int soma = 0;
-        for (int j = 0; j < n; j++) if (pIds[j] == pIds[i]) soma += quants[j];
-        if (soma > maxQ || (soma == maxQ && pIds[i] < idMaisVendido)) {
+        for (int j = 0; j < n; j++) {
+            if (pIds[j] == pIds[i]){ // se o ID do produto for igual soma sua quantidade vendida
+                soma += quants[j];
+            }
+        }
+        if (soma > maxQ || (soma == maxQ && pIds[i] < idMaisVendido)) { //Atualiza o mais vendido se encontrou maior quantidade ou se houve empate e o ID atual é menor
             maxQ = soma; idMaisVendido = pIds[i];
         }
     }
-    return idMaisVendido;
+    return idMaisVendido; //retorna o ID do produto mais vendido
 }
 
+//
 int main() {
     int ids[MAX], produtoIds[MAX], quantidades[MAX];
     float precos[MAX];
