@@ -236,26 +236,29 @@ int encontrarProdutoMaisVendido(int pIds[], int quants[], int n) {
     return idMaisVendido; //retorna o ID do produto mais vendido
 }
 
-//
+//Função principal
 int main() {
+    //Arrays paralelos
     int ids[MAX], produtoIds[MAX], quantidades[MAX];
     float precos[MAX];
+    //Arrays para armazenar os dados dos produtos
     int pIdsCatalogo[MAX];
     char descricoes[MAX][50];
 
-    int nVendas = carregarVendas("vendas.txt", ids, produtoIds, quantidades, precos, MAX);
-    int nProdutos = carregarProdutos("produtos.csv", pIdsCatalogo, descricoes, MAX);
+    int nVendas = carregarVendas("vendas.txt", ids, produtoIds, quantidades, precos, MAX); //Carrega os dados do arquivo txt
+    int nProdutos = carregarProdutos("produtos.csv", pIdsCatalogo, descricoes, MAX); //Carrega os produtos do arquivo csv
 
-    if (nVendas == -1 || nProdutos == -1) {
-        if (nVendas == -1) printf("Erro ao abrir o arquivo vendas.txt.\n");
-        if (nProdutos == -1) printf("Erro ao abrir o arquivo produtos.csv.\n");
+    if (nVendas == -1 || nProdutos == -1) { //Verifica se houve algum erro ao abrir algum dos arquivos
+        if (nVendas == -1) printf("Erro ao abrir o arquivo vendas.txt.\n"); //Verifica se foi especificadamente no txt
+        if (nProdutos == -1) printf("Erro ao abrir o arquivo produtos.csv.\n"); //Verifica se foi especificadamente no csv
         printf("Encerrando o programa.\n");
-        return 1;
+        return 1; //Encerra o programa
     }
 
-    int opcao, algOrd = 0, algBusca, idBusca, idx, idMaisVendido;
-    bool ordenado = false;
+    int opcao, algOrd = 0, algBusca, idBusca, idx, idMaisVendido; //Variaveis de controle do sistema (opção,algoritmo de ordenação,busca,ID,indice e masi vendido)
+    bool ordenado = false; //Verifica se o vetor já foi ordenado
 
+    //Loop Principal
     do {
         printf("\n===== SISTEMA DE ANALISE DE VENDAS =====\n");
         printf("1. Mostrar vendas ordenadas por ID\n");
@@ -268,60 +271,78 @@ int main() {
 
         switch (opcao) {
             case 1:
-                if (!ordenado) {
+                if (!ordenado) { //Se ainda não estiver ordenado pede para o usuário escolher um algoritmo de ordenação
                     printf("Escolha o algoritmo de ordenacao:\n1. Bubble Sort\n2. Insertion Sort\n3. Selection Sort\n4. Quick Sort\n5. Merge Sort\nOpcao: ");
                     scanf("%d", &algOrd);
-                    if (algOrd == 1) bubbleSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas);
-                    else if (algOrd == 2) insertionSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas);
-                    else if (algOrd == 3) selectionSortPorId(ids, produtoIds, quantidades, precos, nVendas);
-                    else if (algOrd == 4) quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1);
-                    else if (algOrd == 5) mergeSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1);
-                    ordenado = true;
+                    //Executa o algoritmo escolhido pelo usuário
+                    if (algOrd == 1) bubbleSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
+                    else if (algOrd == 2) insertionSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
+                    else if (algOrd == 3) selectionSortPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
+                    else if (algOrd == 4) quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1) ordenado = true;
+                    else if (algOrd == 5) mergeSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1) ordenado = true;
+                    else {
+                        printf("Algoritmo inválido");
+                        break;
                 }
-                printf("\nVendas ordenadas por ID:\nID Venda | Produto | Descricao | Qtd | Preco | Total\n");
-                for (int i = 0; i < nVendas; i++) {
-                    int pIdx = -1;
-                    for(int j=0; j<nProdutos; j++) if(pIdsCatalogo[j] == produtoIds[i]) pIdx = j;
-                    printf("%-8d | %-7d | %-15s | %-3d | %-5.2f | %.2f\n", ids[i], produtoIds[i], (pIdx != -1 ? descricoes[pIdx] : "N/A"), quantidades[i], precos[i], quantidades[i] * precos[i]);
+                printf("\nVendas ordenadas por ID:\nID Venda | Produto | Descricao | Qtd | Preco | Total\n"); //exibe o cabeçalho da tabela
+                for (int i = 0; i < nVendas; i++) { // Percorre todas as vendas
+                    int pIdx = -1; //Guarda a posição da descrição do produto
+                    for(int j=0; j<nProdutos; j++){ //Procura o prdouto atual no catalogo de produtos
+                     if(pIdsCatalogo[j] == produtoIds[i]) pIdx = j; //Se encontrou o mesmo ID salva a sua posição
+                    }
+                    //Exibe os dados da venda e se encontrou descrição mostra ela, caso não encontre mostra N/A
+                    printf("%-8d | %-7d | %-15s | %-3d | %-5.2f | %.2f\n", ids[i], produtoIds[i],(pIdx != -1 ? descricoes[pIdx] : "N/A"), quantidades[i], precos[i], quantidades[i] * precos[i]);
                 }
                 break;
             case 2:
                 printf("Digite o ID da venda: ");
                 scanf("%d", &idBusca);
-                printf("Escolha o algoritmo (1. Linear, 2. Binaria): ");
+                //Permite Escolher o algoritmo de busca
+                printf("Escolha o algoritmo de busca:\n");
+                printf("1. Busca Linear\n");
+                printf("2. Busca Binária\n");
+                printf("Opção:");
                 scanf("%d", &algBusca);
-                if (algBusca == 2) {
-                    if (!ordenado) { quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1); ordenado = true; }
-                    idx = buscaBinaria(ids, nVendas, idBusca);
-                } else idx = buscaLinear(ids, nVendas, idBusca);
+                if (algBusca == 2) { //Busca Binária
+                    if (!ordenado) { quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1); ordenado = true; } //Se não estiver ordenado ordena automáticamente
+                    idx = buscaBinaria(ids, nVendas, idBusca); //Executa busca binária
+                } if (algBusca == 1) { //Busca Linear
+                    idx = buscaLinear(ids, nVendas, idBusca); //Executa busca linear
+                } else{
+                    printf("Digite uma das opções válidas") //Caso o usuário digite algo diferente de 1 ou 2
+                }
                 
-                if (idx != -1) {
-                    int pIdx = -1;
-                    for(int j=0; j<nProdutos; j++) if(pIdsCatalogo[j] == produtoIds[idx]) pIdx = j;
+                if (idx != -1) { //Verifica se encontrou a venda
+                    int pIdx = -1; //guarda a posição do produto
+                    for(int j=0; j<nProdutos; j++) if(pIdsCatalogo[j] == produtoIds[idx]) pIdx = j; //procura a descrição do produto
                     printf("\nVenda encontrada:\n");
                     printf("ID Venda: %d\n", ids[idx]);
                     printf("Produto: %d\n", produtoIds[idx]);
                     printf("Descricao: %s\n", (pIdx != -1 ? descricoes[pIdx] : "N/A"));
                     printf("Quantidade: %d\n", quantidades[idx]);
                     printf("Preco unitario: %.2f\n", precos[idx]);
-                    printf("Total da venda: %.2f\n", quantidades[idx] * precos[idx]);
-                } else printf("Venda nao encontrada.\n");
+                    printf("Total da venda: %.2f\n", quantidades[idx] * precos[idx]); //Calcula o total da venda
+                } else printf("Venda nao encontrada.\n"); //Caso não encontre nada mostra que a venda não foi encontrada
                 break;
             case 3:
-                printf("Faturamento total: R$ %.2f\n", calcularFaturamentoTotal(quantidades, precos, nVendas));
+                printf("Faturamento total: R$ %.2f\n", calcularFaturamentoTotal(quantidades, precos, nVendas));//percorre todas as vendas e soma
                 break;
             case 4: {
-                idMaisVendido = encontrarProdutoMaisVendido(produtoIds, quantidades, nVendas);
-                int pIdx = -1;
-                for(int j=0; j<nProdutos; j++) if(pIdsCatalogo[j] == idMaisVendido) pIdx = j;
-                int totalQ = 0;
-                for(int i=0; i<nVendas; i++) if(produtoIds[i] == idMaisVendido) totalQ += quantidades[i];
+                idMaisVendido = encontrarProdutoMaisVendido(produtoIds, quantidades, nVendas);//chama a função para encontrar o produto com maior quantidade vendida
+                int pIdx = -1; //guarda a posição do produto encontrado dentro do catálogo
+                for(int j=0; j<nProdutos; j++){ //Procura o produto no catálogo usando o ID encontrado
+                    if(pIdsCatalogo[j] == idMaisVendido) pIdx = j; //se encontra esse mesmo ID salva a sua posição
+                }
+                int totalQ = 0; //Armazena a quantidade total vendida do produto
+                for(int i=0; i<nVendas; i++){ //Percorre todas as vendas procurando ocorrencias do produto mais vendido
+                    if(produtoIds[i] == idMaisVendido) totalQ += quantidades[i]; //Caso o produto da venda atual for igual ao mais vendido soma a sua quantidade
+                }
                 printf("\nProduto mais vendido:\nID: %d\nDescricao: %s\nTotal Vendido: %d\n", idMaisVendido, (pIdx != -1 ? descricoes[pIdx] : "N/A"), totalQ);
                 break;
             }
-            case 5: printf("Encerrando o programa.\n"); break;
-            default: printf("Opcao invalida. Tente novamente.\n");
+            case 5: printf("Encerrando o programa.\n"); break; //Encerra o programa 
+            default: printf("Opcao invalida. Tente novamente.\n"); //Executada quando o usuário digita uma opção inválida
         }
-    } while (opcao != 5);
+    } while (opcao != 5); //Menu continua aparecendo enquanto o usuário não digita 5 para fechâ-lo
     return 0;
 }
