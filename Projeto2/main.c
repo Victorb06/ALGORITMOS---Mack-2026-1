@@ -275,16 +275,19 @@ int main() {
                     printf("Escolha o algoritmo de ordenacao:\n1. Bubble Sort\n2. Insertion Sort\n3. Selection Sort\n4. Quick Sort\n5. Merge Sort\nOpcao: ");
                     scanf("%d", &algOrd);
                     //Executa o algoritmo escolhido pelo usuário
-                    if (algOrd == 1) bubbleSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
-                    else if (algOrd == 2) insertionSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
-                    else if (algOrd == 3) selectionSortPorId(ids, produtoIds, quantidades, precos, nVendas) ordenado = true;
-                    else if (algOrd == 4) quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1) ordenado = true;
-                    else if (algOrd == 5) mergeSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1) ordenado = true;
-                    else {
-                        printf("Algoritmo inválido");
+                    if (algOrd == 1) bubbleSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas);
+                    else if (algOrd == 2) insertionSortVendaPorId(ids, produtoIds, quantidades, precos, nVendas);
+                    else if (algOrd == 3) selectionSortPorId(ids, produtoIds, quantidades, precos, nVendas);
+                    else if (algOrd == 4) quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1);
+                    else if (algOrd == 5) mergeSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1);
+                    else{
+                        printf("Opção Inválida\n");//Caso o usuário digite algo diferente do que é pedido
                         break;
+                    }
+                    ordenado = true;
                 }
-                printf("\nVendas ordenadas por ID:\nID Venda | Produto | Descricao | Qtd | Preco | Total\n"); //exibe o cabeçalho da tabela
+                
+                printf("\nVendas ordenadas por ID:\nID Venda | Produto | Descricao       | Qtd | Preço | Total\n"); //exibe o cabeçalho da tabela
                 for (int i = 0; i < nVendas; i++) { // Percorre todas as vendas
                     int pIdx = -1; //Guarda a posição da descrição do produto
                     for(int j=0; j<nProdutos; j++){ //Procura o prdouto atual no catalogo de produtos
@@ -306,10 +309,11 @@ int main() {
                 if (algBusca == 2) { //Busca Binária
                     if (!ordenado) { quickSortPorId(ids, produtoIds, quantidades, precos, 0, nVendas - 1); ordenado = true; } //Se não estiver ordenado ordena automáticamente
                     idx = buscaBinaria(ids, nVendas, idBusca); //Executa busca binária
-                } if (algBusca == 1) { //Busca Linear
-                    idx = buscaLinear(ids, nVendas, idBusca); //Executa busca linear
+                }else if (algBusca == 1){ //Busca Linear
+                    idx = buscaLinear(ids, nVendas, idBusca); //Executa busca Linear
                 } else{
-                    printf("Digite uma das opções válidas") //Caso o usuário digite algo diferente de 1 ou 2
+                    printf("Opção Inválida\n"); // Caso o usuário digite algo diferente de 1 ou 2
+                    break;
                 }
                 
                 if (idx != -1) { //Verifica se encontrou a venda
@@ -337,7 +341,7 @@ int main() {
                 for(int i=0; i<nVendas; i++){ //Percorre todas as vendas procurando ocorrencias do produto mais vendido
                     if(produtoIds[i] == idMaisVendido) totalQ += quantidades[i]; //Caso o produto da venda atual for igual ao mais vendido soma a sua quantidade
                 }
-                printf("\nProduto mais vendido:\nID: %d\nDescricao: %s\nTotal Vendido: %d\n", idMaisVendido, (pIdx != -1 ? descricoes[pIdx] : "N/A"), totalQ);
+                printf("\nProduto mais vendido:\nProduto: %d\nDescricao: %s\nQuantidade Total Vendida: %d\n", idMaisVendido, (pIdx != -1 ? descricoes[pIdx] : "N/A"), totalQ);
                 break;
             }
             case 5: printf("Encerrando o programa.\n"); break; //Encerra o programa 
