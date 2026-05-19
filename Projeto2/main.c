@@ -102,30 +102,38 @@ void insertionSortVendaPorId(int ids[], int pIds[], int quants[], float precos[]
     }
 }
 
-//
+//Separa em pivôs e se repete com recursão
 void quickSortPorId(int ids[], int pIds[], int quants[], float precos[], int inicio, int fim) {
     if (inicio < fim) {
-        int pivo = ids[fim], i = inicio - 1;
+        int pivo = ids[fim], i = inicio - 1; //Escolhe o último elemento como pivô e i controla a posição dos elementos menores
         for (int j = inicio; j < fim; j++) {
-            if (ids[j] <= pivo) { i++; trocarDados(ids, pIds, quants, precos, i, j); }
+            if (ids[j] <= pivo) { //Se o elemento for menor ou igual ao pivô ele fica antes do pivô
+                i++; 
+                trocarDados(ids, pIds, quants, precos, i, j); // troca os elementos para manter os menores antes do pivô
+            }
         }
-        trocarDados(ids, pIds, quants, precos, i + 1, fim);
-        int p = i + 1;
-        quickSortPorId(ids, pIds, quants, precos, inicio, p - 1);
-        quickSortPorId(ids, pIds, quants, precos, p + 1, fim);
+        trocarDados(ids, pIds, quants, precos, i + 1, fim);//Coloca o pivô na posição certa
+        int p = i + 1; // posição final do pivô
+        quickSortPorId(ids, pIds, quants, precos, inicio, p - 1); //Ordena a parte esquerda
+        quickSortPorId(ids, pIds, quants, precos, p + 1, fim); //Ordena a parte direita 
     }
 }
 
+//Junta duas partes já ordenadas do vetor
 void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int meio, int fim) {
+    //Calcula o tamanho das duas metades
     int tam1 = meio - inicio + 1;
     int tam2 = fim - meio;
 
+    //Vetores da parte esquerda
     int idsEsq[tam1], pIdsEsq[tam1], quantsEsq[tam1];
     float precosEsq[tam1];
 
+    //Vetores da parte direita
     int idsDir[tam2], pIdsDir[tam2], quantsDir[tam2];
     float precosDir[tam2];
 
+    //Copia os dados da esquerda para os vetores
     for (int i = 0; i < tam1; i++) {
         idsEsq[i] = ids[inicio + i];
         pIdsEsq[i] = pIds[inicio + i];
@@ -133,6 +141,7 @@ void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int m
         precosEsq[i] = precos[inicio + i];
     }
 
+    //Copia os dados da parte direita para os vetores
     for (int i = 0; i < tam2; i++) {
         idsDir[i] = ids[meio + 1 + i];
         pIdsDir[i] = pIds[meio + 1 + i];
@@ -140,18 +149,20 @@ void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int m
         precosDir[i] = precos[meio + 1 + i];
     }
 
-    int i = 0;
-    int j = 0;
-    int k = inicio;
+    int i = 0; //metade esquerda
+    int j = 0; //metade direita
+    int k = inicio; //vetor original
 
-    while (i < tam1 && j < tam2) {
+    while (i < tam1 && j < tam2) { //Compara os menores elementos de cada metade
 
+        //Se o elemento da esquerda for menor ele volta primeiro para o vetor original
         if (idsEsq[i] <= idsDir[j]) {
             ids[k] = idsEsq[i];
             pIds[k] = pIdsEsq[i];
             quants[k] = quantsEsq[i];
             precos[k] = precosEsq[i];
             i++;
+            //Se o elemento da direita for menor ele volta primeiro para o vetor original
         } else {
             ids[k] = idsDir[j];
             pIds[k] = pIdsDir[j];
@@ -163,6 +174,7 @@ void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int m
         k++;
     }
 
+    //Se sobraram elementos na esquerda eles são copiados para o vetor original
     while (i < tam1) {
         ids[k] = idsEsq[i];
         pIds[k] = pIdsEsq[i];
@@ -172,7 +184,8 @@ void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int m
         i++;
         k++;
     }
-
+    
+    //Se sobraram elementos na direita eles são copiados para o vetor original
     while (j < tam2) {
         ids[k] = idsDir[j];
         pIds[k] = pIdsDir[j];
@@ -184,18 +197,20 @@ void merge(int ids[], int pIds[], int quants[], float precos[],int inicio, int m
     }
 }
 
+//Divide o vetor em partes menores até apenas sobrar um elemento e depois junta novamente usando a função merge
 void mergeSortPorId(int ids[], int pIds[], int quants[], float precos[], int inicio, int fim) {
-     if (inicio < fim) {
-        int meio = (inicio + fim) / 2;
+     if (inicio < fim) { //Divide enquanto ainda houver mais de um elemento
+        int meio = (inicio + fim) / 2; //Calcula o meio do vetor
 
-        mergeSortPorId(ids, pIds, quants, precos, inicio, meio);
+        mergeSortPorId(ids, pIds, quants, precos, inicio, meio); //Ordena a parte da esquerda
 
-        mergeSortPorId(ids, pIds, quants, precos, meio + 1, fim);
+        mergeSortPorId(ids, pIds, quants, precos, meio + 1, fim); //Ordena a parte da direita
 
-        merge(ids, pIds, quants, precos, inicio, meio, fim);
+        merge(ids, pIds, quants, precos, inicio, meio, fim); //Junta as duas partes ordenadas
     }
 }
 
+//
 float calcularFaturamentoTotal(int quants[], float prs[], int n) {
     float total = 0;
     for (int i = 0; i < n; i++) total += quants[i] * prs[i];
