@@ -39,7 +39,7 @@ int carregarProdutos(const char nome[], int pIdsC[], char descs[][50], int max) 
     FILE *f = fopen(nome, "r"); //Abre o arquivo
     if (!f) return -1; //verifica se houve algum erro na hora de abrir
     int i = 0;
-    while (i < max && fscanf(f, "%d;%49[^\n]", &pIdsC[i], descs[i]) == 2) i++; //Lê ate 49 caracteres ou até enter
+    while (i < max && fscanf(f, "%d; %49[^\n]", &pIdsC[i], descs[i]) == 2) i++; //Lê ate 49 caracteres ou até enter
     fclose(f);
     return i; // Retorna a quantidade carregada 
 }
@@ -56,9 +56,15 @@ int buscaBinaria(int ids[], int n, int id) {
     int ini = 0, fim = n - 1;
     while (ini <= fim) {
         int meio = (ini + fim) / 2; //Calcula a posição do meio
-        if (ids[meio] == id) return meio; //Verifica se encontrou 
-        if (ids[meio] > id) fim = meio - 1; //Se valor do meio for maior está na parte da esquerda
-        else ini = meio + 1; // Se o valor for menor está na parte da direita 
+        if (ids[meio] == id){
+            return meio; //Verifica se encontrou 
+        }
+        if (ids[meio] > id) {
+            fim = meio - 1; //Se valor do meio for maior está na parte da esquerda
+
+        }else {
+            ini = meio + 1; // Se o valor for menor está na parte da direita 
+        }
     }
     return -1; // Não encontrou
 }
@@ -265,7 +271,7 @@ int main() {
         printf("2. Buscar venda por ID\n");
         printf("3. Calcular faturamento total\n");
         printf("4. Identificar produto mais vendido\n");
-        printf("5. Sair da aplicacao\n");
+        printf("5. Sair da aplicação\n");
         printf("Escolha uma opcao: ");
         scanf("%d", &opcao);
 
@@ -291,10 +297,19 @@ int main() {
                 for (int i = 0; i < nVendas; i++) { // Percorre todas as vendas
                     int pIdx = -1; //Guarda a posição da descrição do produto
                     for(int j=0; j<nProdutos; j++){ //Procura o prdouto atual no catalogo de produtos
-                     if(pIdsCatalogo[j] == produtoIds[i]) pIdx = j; //Se encontrou o mesmo ID salva a sua posição
+                     if(pIdsCatalogo[j] == produtoIds[i]){
+                         pIdx = j; //Se encontrou o mesmo ID salva a sua posição
+                         break;
+                        }
                     }
-                    //Exibe os dados da venda e se encontrou descrição mostra ela, caso não encontre mostra N/A
-                    printf("%-8d | %-7d | %-15s | %-3d | %-5.2f | %.2f\n", ids[i], produtoIds[i],(pIdx != -1 ? descricoes[pIdx] : "N/A"), quantidades[i], precos[i], quantidades[i] * precos[i]);
+                        char *descricao; //ponteiro para guardar o texto que será usado
+                        if(pIdx != -1){ //verifica se o produto foi encontrado no catálogo
+                            descricao = descricoes[pIdx];//Se encontrou armazena a descrição
+                        }else{
+                            descricao = "N/A"; //Se não encontrou retorna N/A
+                        }
+                    //Exibe os dados da venda
+                    printf("%-8d | %-7d | %-15s | %-3d | %-5.2f | %.2f\n", ids[i], produtoIds[i],descricao, quantidades[i], precos[i], quantidades[i] * precos[i]);
                 }
                 break;
             case 2:
@@ -318,11 +333,23 @@ int main() {
                 
                 if (idx != -1) { //Verifica se encontrou a venda
                     int pIdx = -1; //guarda a posição do produto
-                    for(int j=0; j<nProdutos; j++) if(pIdsCatalogo[j] == produtoIds[idx]) pIdx = j; //procura a descrição do produto
+                    for(int j=0; j<nProdutos; j++){
+                         if(pIdsCatalogo[j] == produtoIds[idx]){
+                            pIdx = j; //procura a descrição do produto
+                            break;
+                        }
+                    }
+                        char *descricao; //ponteiro para armazenar o texto
+                        if (pIdx != -1) { //Verifica se o produto foi encontrado
+                            descricao = descricoes[pIdx]; //Se encontrou, usa a descrição do array
+                        } else {
+                            descricao = "N/A"; //Caso não encontrou retorna N/A
+                        }
+
                     printf("\nVenda encontrada:\n");
                     printf("ID Venda: %d\n", ids[idx]);
                     printf("Produto: %d\n", produtoIds[idx]);
-                    printf("Descricao: %s\n", (pIdx != -1 ? descricoes[pIdx] : "N/A"));
+                    printf("Descricao: %s\n", descricao);
                     printf("Quantidade: %d\n", quantidades[idx]);
                     printf("Preco unitario: %.2f\n", precos[idx]);
                     printf("Total da venda: %.2f\n", quantidades[idx] * precos[idx]); //Calcula o total da venda
@@ -335,13 +362,26 @@ int main() {
                 idMaisVendido = encontrarProdutoMaisVendido(produtoIds, quantidades, nVendas);//chama a função para encontrar o produto com maior quantidade vendida
                 int pIdx = -1; //guarda a posição do produto encontrado dentro do catálogo
                 for(int j=0; j<nProdutos; j++){ //Procura o produto no catálogo usando o ID encontrado
-                    if(pIdsCatalogo[j] == idMaisVendido) pIdx = j; //se encontra esse mesmo ID salva a sua posição
+                    if(pIdsCatalogo[j] == idMaisVendido){
+                        pIdx = j; //se encontra esse mesmo ID salva a sua posição
+                        break;
+                    }
                 }
                 int totalQ = 0; //Armazena a quantidade total vendida do produto
                 for(int i=0; i<nVendas; i++){ //Percorre todas as vendas procurando ocorrencias do produto mais vendido
-                    if(produtoIds[i] == idMaisVendido) totalQ += quantidades[i]; //Caso o produto da venda atual for igual ao mais vendido soma a sua quantidade
+                    if(produtoIds[i] == idMaisVendido){
+                        totalQ += quantidades[i]; //Caso o produto da venda atual for igual ao mais vendido soma a sua quantidade
+                    }
                 }
-                printf("\nProduto mais vendido:\nProduto: %d\nDescricao: %s\nQuantidade Total Vendida: %d\n", idMaisVendido, (pIdx != -1 ? descricoes[pIdx] : "N/A"), totalQ);
+
+                char *descricao; //Ponteiro que armazena a descrição do produto
+                if (pIdx != -1) { //Verifica se encontrou o produto no catálogo
+                    descricao= descricoes[pIdx]; //Guarda a descrição real do produto se o encontrou
+                } else {
+                    descricao = "N/A"; //Se não encontrou, retorna o N/A
+                }   
+
+                printf("\nProduto mais vendido:\nProduto: %d\nDescricao: %s\nQuantidade Total Vendida: %d\n", idMaisVendido,descricao, totalQ);
                 break;
             }
             case 5: printf("Encerrando o programa.\n"); break; //Encerra o programa 
