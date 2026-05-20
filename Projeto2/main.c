@@ -261,7 +261,7 @@ int main() {
         return 1; //Encerra o programa
     }
 
-    int opcao, algOrd = 0, algBusca, idBusca, idx, idMaisVendido; //Variaveis de controle do sistema (opção,algoritmo de ordenação,busca,ID,indice e masi vendido)
+    int opcao, algOrd = 0, algBusca, idBusca, idx, idMaisVendido; //Variaveis de controle do sistema (opção,algoritmo de ordenação,busca,ID,indice e mais vendido)
     bool ordenado = false; //Verifica se o vetor já foi ordenado
 
     //Loop Principal
